@@ -4,6 +4,7 @@ import (
 	"agree-market/database"
 	"agree-market/entity"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -40,16 +41,23 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	requestBody, _ := ioutil.ReadAll(r.Body)
 	var user entity.User
 	json.Unmarshal(requestBody, &user)
-
+	if len(user.Email) == 0 {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	fmt.Println(user)
 	var fetchedUser entity.User
 	database.Connector.Where("email = ?", user.Email).First(&fetchedUser)
-
+	// database.Connector.Find(&fetchedUser)
+	fmt.Println(fetchedUser)
 	if fetchedUser.ID == 0 {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-
+	fmt.Println(fetchedUser.Password)
+	fmt.Println(user.Password)
 	err := bcrypt.CompareHashAndPassword([]byte(fetchedUser.Password), []byte(user.Password))
+	fmt.Println(err)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
@@ -100,6 +108,7 @@ func GetProductById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	productId := params["id"]
 
+	fmt.Println(productId)
 	var product entity.Product
 	database.Connector.First(&product, productId)
 
