@@ -27,6 +27,7 @@ func initaliseHandlers(router *mux.Router) {
 	router.HandleFunc("/products", controllers.GetProducts).Methods("GET")
 	router.HandleFunc("/product/{id}", controllers.GetProductById).Methods("GET")
 	router.HandleFunc("/products/search", controllers.SearchProducts).Methods("GET")
+	router.HandleFunc("/shoppingcart", controllers.GetShoppingCart).Methods("GET")
 }
 
 func initDB() {
@@ -43,6 +44,6 @@ func initDB() {
 	if err != nil {
 		panic(err.Error())
 	}
-	database.Connector.AutoMigrate(&entity.User{}, &entity.Product{}, &entity.Category{})
+	database.Connector.AutoMigrate(&entity.User{}, &entity.Product{}, &entity.Category{}, &entity.Shopping_Cart{})
 
 }
